@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MONITORING REALTIME — HALAMAN ONLINE</title>
+
+<style>
+    body{
+        background:#000;
+        font-family:Courier New, monospace;
+        color:#00ff00;
+        padding:20px;
+    }
+    h1{
+        text-align:center;
+        margin-bottom:20px;
+        color:#00ff00;
+    }
+    #mon{
+        display:flex;
+        flex-wrap:wrap;
+        gap:15px;
+        justify-content:center;
+    }
+    .btn{
+        width:220px;
+        padding:18px 12px;
+        text-align:center;
+        border:2px solid #00ff00;
+        border-radius:8px;
+        cursor:pointer;
+        font-weight:bold;
+        transition:0.2s;
+        background:#111;
+        color:#00ff00;
+    }
+    .online{
+        background:#003300 !important;
+        border-color:#00ff00;
+        color:#00ff00;
+        animation:blink 1s infinite;
+    }
+    .offline{
+        background:#330000 !important;
+        border-color:#ff3b3b;
+        color:#ff3b3b;
+    }
+    @keyframes blink{
+        50%{ opacity:0.3; }
+    }
+</style>
+
+</head>
+<body>
+
+<h1>📡 MONITORING HALAMAN AKTIF</h1>
+
+<div id="mon"></div>
+
+<!-- =============== FIREBASE REALTIME SCRIPT =============== -->
+<script type="module">
+/* ---------------------------------------------------------
+   1. CONFIGURASI FIREBASE (WAJIB DIISI)
+---------------------------------------------------------- */
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "ISI_API",
+  authDomain: "ISI_AUTH",
+  databaseURL: "ISI_DB",
+  projectId: "ISI_PROJECT",
+  storageBucket: "ISI_BUCKET",
+  messagingSenderId: "ISI_MSG",
+  appId: "ISI_APP"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+
+/* ---------------------------------------------------------
+   2. DAFTAR HALAMAN YANG DI MONITOR
+---------------------------------------------------------- */
+const pages = [
+    "BT5Python/p120G412",
+    "BT5Python/p220Q144",
+    "BT5Python/p100A999",
+    "BT5Python/p550T812",
+    "BT5Python/x101Access"
+];
+
+
+/* ---------------------------------------------------------
+   3. RENDER TOMBOL
+---------------------------------------------------------- */
+function renderButtons(){
+    const wrap = document.getElementById("mon");
+    wrap.innerHTML = "";
+    pages.forEach(page=>{
+        wrap.innerHTML += `
+            <div id="${page.replace(/\//g,'_')}" class="btn offline">
+                ${page}
+            </div>
+        `;
+    });
+}
+renderButtons();
+
+
+/* ---------------------------------------------------------
+   4. LISTENER REALTIME FIREBASE
+---------------------------------------------------------- */
+pages.forEach(page => {
+
+    const safeID = page.replace(/\//g,'_'); // Karena ada `/`
+    const button = document.getElementById(safeID);
+
+    onValue(ref(db, "pages/" + page), (snap) => {
+        const data = snap.val();
+
+        // Tidak ada data = OFFLINE
+        if (!data) {
+            button.classList.remove("online");
+            button.classList.add("offline");
+            return;
+        }
+
+        const last = data.lastSeen || 0;
+        const delta = Date.now() - last;
+
+        // Jika heartbeat < 5 detik = ONLINE
+        if (delta < 5000) {
+            button.classList.remove("offline");
+            button.classList.add("online");
+        }
+        // Jika > 5 detik = OFFLINE
+        else {
+            button.classList.remove("online");
+            button.classList.add("offline");
+        }
+    });
+});
+
+</script>
+
+</body>
+</html>
