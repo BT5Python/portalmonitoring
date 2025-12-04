@@ -76,11 +76,24 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-console.log("🔥 Firebase Connected");
+// ===============================
+// LISTEN SEMUA DATA DALAM "pages"
+// ===============================
+onValue(ref(db, "pages"), snapshot => {
+    const data = snapshot.val();
+    const container = document.getElementById("mon");
 
-// TEST LISTEN
-onValue(ref(db, "pages/BT5Python/p120G412"), snap => {
-    console.log("DATA =", snap.val());
+    container.innerHTML = "";  // reset tampilan
+
+    for (const key in data) {
+        const isOnline = data[key] === true;
+
+        const div = document.createElement("div");
+        div.className = "btn " + (isOnline ? "online" : "offline");
+        div.textContent = key + " — " + (isOnline ? "ONLINE" : "OFFLINE");
+
+        container.appendChild(div);
+    }
 });
 </script>
 
