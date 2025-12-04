@@ -63,13 +63,10 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-/* ==============================
-   FIREBASE CONFIG KAMU
-============================== */
 const firebaseConfig = {
   apiKey: "AIzaSyC7SkdwajJl6pzXehN6zpeycNfT5ZHFXP4",
   authDomain: "portalmonitoring-a0926.firebaseapp.com",
-  databaseURL: "https://portalmonitoring-a0926-default-rtdb.asia-southeast1.firebasedatabase.app",
+  databaseURL: "https://portalmonitoring-a0926-default-rtdb.firebaseio.com",
   projectId: "portalmonitoring-a0926",
   storageBucket: "portalmonitoring-a0926.appspot.com",
   messagingSenderId: "27756738323",
@@ -79,66 +76,12 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
+console.log("---- FIREBASE CONNECT TEST ----");
 
-/* ==============================
-   LIST HALAMAN YANG DI MONITOR
-============================== */
-const pages = [
-    "BT5Python/p120G412",
-    "BT5Python/HUKUM",
-    "BT5Python/s4t1nt3L",
-    "BT5Python/s4tpr0v",
-    "BT5Python/j412k0m13124"
-];
-
-
-/* ==============================
-   RENDER BUTTON DI MONITOR
-============================== */
-function renderButtons(){
-    const wrap = document.getElementById("mon");
-    wrap.innerHTML = "";
-
-    pages.forEach(page=>{
-        wrap.innerHTML += `
-            <div id="${page.replace(/\//g,'_')}" class="btn offline">
-                ${page}
-            </div>
-        `;
-    });
-}
-renderButtons();
-
-
-/* ==============================
-   LISTENER REALTIME
-============================== */
-pages.forEach(page => {
-
-    const safeID = page.replace(/\//g,'_');
-    const button = document.getElementById(safeID);
-
-    onValue(ref(db, "pages/" + page), (snap) => {
-
-        const data = snap.val();
-        if (!data){
-            button.classList.remove("online");
-            button.classList.add("offline");
-            return;
-        }
-
-        const last = data.lastSeen || 0;
-        const delta = Date.now() - last;
-
-        if (delta < 5000){
-            button.classList.remove("offline");
-            button.classList.add("online");
-        } else {
-            button.classList.remove("online");
-            button.classList.add("offline");
-        }
-    });
+onValue(ref(db, "pages/BT5Python/p120G412"), snap => {
+    console.log("DATA =", snap.val());
 });
+
 </script>
 
 </body>
