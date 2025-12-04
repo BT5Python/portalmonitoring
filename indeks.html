@@ -8,7 +8,7 @@
 <style>
     body{
         background:#000;
-        font-family:Courier New, monospace;
+        font-family:"Courier New", monospace;
         color:#00ff00;
         padding:20px;
     }
@@ -58,11 +58,14 @@
 
 <div id="mon"></div>
 
+<!-- ========== FIREBASE REALTIME ========== -->
 <script type="module">
-
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
+/* ==============================
+   FIREBASE CONFIG KAMU
+============================== */
 const firebaseConfig = {
   apiKey: "AIzaSyC7SkdwajJl6pzXehN6zpeycNfT5ZHFXP4",
   authDomain: "portalmonitoring-a0926.firebaseapp.com",
@@ -76,6 +79,10 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
+
+/* ==============================
+   LIST HALAMAN YANG DI MONITOR
+============================== */
 const pages = [
     "BT5Python/p120G412",
     "BT5Python/HUKUM",
@@ -84,9 +91,14 @@ const pages = [
     "BT5Python/j412k0m13124"
 ];
 
+
+/* ==============================
+   RENDER BUTTON DI MONITOR
+============================== */
 function renderButtons(){
     const wrap = document.getElementById("mon");
     wrap.innerHTML = "";
+
     pages.forEach(page=>{
         wrap.innerHTML += `
             <div id="${page.replace(/\//g,'_')}" class="btn offline">
@@ -97,12 +109,19 @@ function renderButtons(){
 }
 renderButtons();
 
+
+/* ==============================
+   LISTENER REALTIME
+============================== */
 pages.forEach(page => {
-    const button = document.getElementById(page.replace(/\//g,'_'));
+
+    const safeID = page.replace(/\//g,'_');
+    const button = document.getElementById(safeID);
 
     onValue(ref(db, "pages/" + page), (snap) => {
+
         const data = snap.val();
-        if (!data) {
+        if (!data){
             button.classList.remove("online");
             button.classList.add("offline");
             return;
@@ -111,7 +130,7 @@ pages.forEach(page => {
         const last = data.lastSeen || 0;
         const delta = Date.now() - last;
 
-        if (delta < 5000) {
+        if (delta < 5000){
             button.classList.remove("offline");
             button.classList.add("online");
         } else {
@@ -120,7 +139,7 @@ pages.forEach(page => {
         }
     });
 });
-
 </script>
+
 </body>
 </html>
