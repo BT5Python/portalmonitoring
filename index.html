@@ -61,13 +61,12 @@
 <!-- ========== FIREBASE REALTIME ========== -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+import { getDatabase, ref, onDisconnect, set, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-/* === FIREBASE CONFIG === */
 const firebaseConfig = {
   apiKey: "AIzaSyC7SkdwajJl6pzXehN6zpeycNfT5ZHFXP4",
   authDomain: "portalmonitoring-a0926.firebaseapp.com",
-  databaseURL: "https://portalmonitoring-a0926-default-rtdb.asia-southeast1.firebasedatabase.app/",
+  databaseURL: "https://portalmonitoring-a0926-default-rtdb.firebaseio.com/",
   projectId: "portalmonitoring-a0926",
   storageBucket: "portalmonitoring-a0926.appspot.com",
   messagingSenderId: "27756738323",
@@ -77,22 +76,15 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-/* === LISTEN REALTIME === */
-onValue(ref(db, "pages/BT5Python"), snap => {
-    const data = snap.val() || {};
+// ----------- NODE YANG DIPANTAU ----------
+const statusRef = ref(db, "pages/BT5Python/p120G412");
 
-    const box = document.getElementById("mon");
-    box.innerHTML = "";  // reset
+// ✔ Saat halaman dibuka = ONLINE
+set(statusRef, true);
 
-    Object.entries(data).forEach(([page, status]) => {
-        const div = document.createElement("div");
-        div.className = "btn " + (status ? "online" : "offline");
-        div.textContent = page + " — " + (status ? "ONLINE" : "OFFLINE");
-        box.appendChild(div);
-    });
-});
+// ❗ Saat halaman ditutup = OFFLINE
+onDisconnect(statusRef).set(false);
 </script>
-
 
 </body>
 </html>
