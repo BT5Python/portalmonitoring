@@ -59,67 +59,6 @@
 <div id="mon"></div>
 
 <!-- ========== FIREBASE REALTIME ========== -->
-<!DOCTYPE html>
-<html lang="id">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MONITORING REALTIME — HALAMAN ONLINE</title>
-
-<style>
-    body{
-        background:#000;
-        font-family:"Courier New", monospace;
-        color:#00ff00;
-        padding:20px;
-    }
-    h1{
-        text-align:center;
-        margin-bottom:20px;
-        color:#00ff00;
-    }
-    #mon{
-        display:flex;
-        flex-wrap:wrap;
-        gap:15px;
-        justify-content:center;
-    }
-    .btn{
-        width:220px;
-        padding:18px 12px;
-        text-align:center;
-        border:2px solid #00ff00;
-        border-radius:8px;
-        cursor:pointer;
-        font-weight:bold;
-        transition:0.2s;
-        background:#111;
-        color:#00ff00;
-    }
-    .online{
-        background:#003300 !important;
-        border-color:#00ff00;
-        color:#00ff00;
-        animation:blink 1s infinite;
-    }
-    .offline{
-        background:#330000 !important;
-        border-color:#ff3b3b;
-        color:#ff3b3b;
-    }
-    @keyframes blink{
-        50%{ opacity:0.3; }
-    }
-</style>
-
-</head>
-<body>
-
-<h1>📡 MONITORING HALAMAN AKTIF</h1>
-
-<div id="mon"></div>
-
-<!-- ========== FIREBASE REALTIME ========== -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
@@ -127,7 +66,7 @@ import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10
 const firebaseConfig = {
   apiKey: "AIzaSyC7SkdwajJl6pzXehN6zpeycNfT5ZHFXP4",
   authDomain: "portalmonitoring-a0926.firebaseapp.com",
-  databaseURL: "https://portalmonitoring-a0926-default-rtdb.firebaseio.com",
+  databaseURL: "https://portalmonitoring-a0926-default-rtdb.firebaseio.com/",
   projectId: "portalmonitoring-a0926",
   storageBucket: "portalmonitoring-a0926.appspot.com",
   messagingSenderId: "27756738323",
@@ -137,16 +76,13 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-console.log("---- FIREBASE CONNECT TEST ----");
+console.log("🔥 Firebase Connected");
 
+// TEST LISTEN
 onValue(ref(db, "pages/BT5Python/p120G412"), snap => {
     console.log("DATA =", snap.val());
 });
-
 </script>
-
-</body>
-</html>
 
 </body>
 </html>
