@@ -7,93 +7,41 @@
 
 <style>
 
-/* —————————————————————————— */
-/*  HACKER CORE STYLE          */
-/* —————————————————————————— */
-
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
 
 :root {
   --hack: #00ff00;
-  --black: #000000;
 }
 
 body {
-  margin: 0;
-  padding: 0;
-  background: #000;
-  color: var(--hack);
-  font-family: 'Share Tech Mono', monospace;
-  font-size: 15px;
-  letter-spacing: 1px;
-  overflow: hidden;
-  user-select: none;
+  margin:0;
+  background:#000;
+  color:var(--hack);
+  font-family:'Share Tech Mono', monospace;
+  font-size:14px;
+  overflow:hidden;
 }
 
-/* CRT Effect */
-body:before {
-  content: "";
-  position: fixed;
-  top:0; left:0; width:100%; height:100%;
-  background: repeating-linear-gradient(
-    rgba(0,255,0,0.05) 0px,
-    rgba(0,255,0,0.05) 1px,
-    rgba(0,0,0,0.05) 2px
-  );
-  pointer-events:none;
-  mix-blend-mode: multiply;
-  animation: flicker 0.15s infinite;
-}
-
-@keyframes flicker {
-  0% { opacity: .8; }
-  50% { opacity: .6; }
-  100% { opacity: .8; }
-}
-
-/* Terminal cursor */
-.cursor {
-  display: inline-block;
-  width: 10px;
-  height: 16px;
-  background: var(--hack);
-  animation: blink 0.6s infinite;
-}
-
-@keyframes blink {
-  0%, 49% { opacity: 1; }
-  50%, 100% { opacity: 0; }
-}
-
-/* Typewriter area */
+/* terminal area */
 #console {
-  height: 100vh;
-  padding: 20px;
-  white-space: pre-line;
-  overflow-y: auto;
-  line-height: 1.4;
+  height:100vh;
+  padding:20px;
+  white-space:pre-line;
+  overflow-y:auto;
+  line-height:1.4;
 }
 
-/* GLITCH NOISE */
-.noise {
-  position: fixed;
-  width:100%;
-  height:100%;
-  top:0;
-  left:0;
-  z-index:9999;
-  mix-blend-mode: screen;
-  pointer-events:none;
+/* cursor */
+.cursor {
+  display:inline-block;
+  width:10px;
+  height:16px;
+  background:var(--hack);
+  animation:blink .5s infinite;
 }
-.noise:after {
-  content:"";
-  position:absolute;
-  width:100%;
-  height:100%;
-  background:
-    url('https://media.giphy.com/media/oEI9uBYSzLpBK/giphy.gif')
-    center center / cover no-repeat;
-  opacity:0.07;
+@keyframes blink {
+  0%,49%{ opacity:1 }
+  50%,100%{ opacity:0 }
 }
 
 </style>
@@ -103,95 +51,55 @@ body:before {
 
 <div id="console"></div>
 <div class="cursor"></div>
-<div class="noise"></div>
 
-
-<!-- FIREBASE -->
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 
 <script>
-/* —————————————————————————— */
-/* FIREBASE CONFIG — GANTI PUNYA KAMU */
-/* —————————————————————————— */
-const firebaseConfig = {
-  apiKey: "AIzaSyB8EXAMPLE123ABCxyz",
-  authDomain: "project-xxx.firebaseapp.com",
-  databaseURL: "https://project-xxx-default-rtdb.firebaseio.com",
-  projectId: "project-xxx",
-  storageBucket: "project-xxx.appspot.com",
-  messagingSenderId: "938653682692",
-  appId: "1:938653682692:web:ab8293cf0ecbeb48afd720"
-};
-firebase.initializeApp(firebaseConfig);
-</script>
 
+/* ============================================================
+   ⚠️ SETTING PALING PENTING — ISI BARIS INI SAJA !!!
+   ============================================================ */
 
-<script>
+const DB_URL = "ISI_DATABASE_URL_KAMU";  
+// contoh: https://monitor-01-default-rtdb.firebaseio.com
 
-/* —————————————————————————— */
-/* TYPEWRITER BOOT SEQUENCE   */
-/* —————————————————————————— */
+/* ============================================================ */
 
-const lines = [
-  "> INITIALIZING TERMINAL ENGINE...",
-  "> CONNECTING TO FIREBASE REALTIME DATABASE...",
-  "> AUTH CHECK — OK",
-  "> LOADING MONITORING SYSTEM [███████████████]",
-  "> RADAR ONLINE",
-  "> SYSTEM STATUS: READY",
-  "",
-  ">> LISTENING FOR ACTIVE WEB CLIENTS...",
-  ""
-];
+firebase.initializeApp({ databaseURL: DB_URL });
 
-let i = 0;
-let speed = 60;
+const consoleDiv = document.getElementById("console");
 
-function typeLine() {
-  if(i < lines.length) {
-    let div = document.getElementById("console");
-    div.innerHTML += lines[i] + "\n";
-    i++;
-    setTimeout(typeLine, speed);
-  }
+function log(msg){
+  consoleDiv.innerHTML += msg + "\n";
+  consoleDiv.scrollTop = consoleDiv.scrollHeight;
 }
 
+/* Boot message */
+log("> INITIALIZING TERMINAL...");
+log("> CONNECTING DATABASE...");
+log("");
 
-/* —————————————————————————— */
-/* REALTIME ACTIVE PAGES LISTENER */
-/* —————————————————————————— */
 
-const db = firebase.database().ref("activePages");
+/* LISTEN ACTIVE PAGES LISTENER */
+firebase.database().ref("activePages").on("value", snap => {
+  const data = snap.val();
 
-db.on("value", snap => {
-  const pages = snap.val();
-  if(!pages) return;
+  if(!data){
+    log("[SYS] No signal detected...");
+    return;
+  }
 
-  Object.keys(pages).forEach(key => {
-    logStatus(key, pages[key]);
+  const time = new Date().toLocaleTimeString("id-ID");
+
+  Object.entries(data).forEach(([name,status])=>{
+    if(status){
+      log(`[${time}] 🔥 ONLINE — ${name}`);
+    } else {
+      log(`[${time}] ❌ OFFLINE — ${name}`);
+    }
   });
 });
-
-function logStatus(name, status){
-  let div = document.getElementById("console");
-  
-  let time = new Date().toLocaleTimeString("id-ID");
-
-  let msg = status
-    ? `[${time}] SIGNAL DETECTED — ${name} ONLINE`
-    : `[${time}] DISCONNECTED — ${name} OFFLINE`;
-
-  div.innerHTML += msg + "\n";
-  div.scrollTop = div.scrollHeight;
-}
-
-
-/* —————————————————————————— */
-/* STARTUP */
-/* —————————————————————————— */
-
-window.onload = typeLine;
 
 </script>
 
