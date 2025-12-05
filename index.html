@@ -105,6 +105,28 @@ body:before {
 <div class="cursor"></div>
 <div class="noise"></div>
 
+
+<!-- FIREBASE -->
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+<script>
+/* —————————————————————————— */
+/* FIREBASE CONFIG — GANTI PUNYA KAMU */
+/* —————————————————————————— */
+const firebaseConfig = {
+  apiKey: "ISI_PUNYAMU",
+  authDomain: "ISI_PUNYAMU",
+  databaseURL: "ISI_PUNYAMU",
+  projectId: "ISI_PUNYAMU",
+  storageBucket: "ISI_PUNYAMU",
+  messagingSenderId: "ISI_PUNYAMU",
+  appId: "ISI_PUNYAMU"
+};
+firebase.initializeApp(firebaseConfig);
+</script>
+
+
 <script>
 
 /* —————————————————————————— */
@@ -134,6 +156,41 @@ function typeLine() {
     setTimeout(typeLine, speed);
   }
 }
+
+
+/* —————————————————————————— */
+/* REALTIME ACTIVE PAGES LISTENER */
+/* —————————————————————————— */
+
+const db = firebase.database().ref("activePages");
+
+db.on("value", snap => {
+  const pages = snap.val();
+  if(!pages) return;
+
+  Object.keys(pages).forEach(key => {
+    logStatus(key, pages[key]);
+  });
+});
+
+function logStatus(name, status){
+  let div = document.getElementById("console");
+  
+  let time = new Date().toLocaleTimeString("id-ID");
+
+  let msg = status
+    ? `[${time}] SIGNAL DETECTED — ${name} ONLINE`
+    : `[${time}] DISCONNECTED — ${name} OFFLINE`;
+
+  div.innerHTML += msg + "\n";
+  div.scrollTop = div.scrollHeight;
+}
+
+
+/* —————————————————————————— */
+/* STARTUP */
+/* —————————————————————————— */
+
 window.onload = typeLine;
 
 </script>
