@@ -59,7 +59,7 @@ html,body{height:100%;margin:0;font-family:ui-monospace, SFMono-Regular, Menlo, 
     </div>
     <div class="menu">
       <button class="active">Overview</button>
-      <button>Network</button>
+      <button id="netBtn">Network</button>
       <button>Processes</button>
       <button>Filesystem</button>
       <button>Alerts</button>
@@ -187,5 +187,30 @@ setInterval(matrix,45);
 // Responsive
 window.addEventListener('resize',()=>{m.width=window.innerWidth;m.height=window.innerHeight});
 </script>
+<script>
+// ====== NETWORK SAVE REAL TANPA UBAH UI ======
+
+let savedNetwork = JSON.parse(localStorage.getItem("savedNetwork")) || [];
+
+// Ketika tombol Network diklik
+document.getElementById("networkBtn").addEventListener("click", () => {
+
+  // popup input sederhana
+  let url = prompt("Masukkan alamat web:");
+
+  if (url && url.trim() !== "") {
+    savedNetwork.push(url.trim());
+    localStorage.setItem("savedNetwork", JSON.stringify(savedNetwork));
+    alert("Alamat disimpan!");
+  }
+});
+</script>
+<script>
+document.getElementById("networkBtn").addEventListener("contextmenu", (e) => {
+  e.preventDefault();
+  alert( JSON.stringify(savedNetwork, null, 2) );
+});
+</script>
+
 </body>
 </html>
