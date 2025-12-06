@@ -213,41 +213,36 @@ document.getElementById("netBtn").addEventListener("contextmenu", (e) => {
 let networkSites = [
     "https://google.com",
     "https://bt5python.github.io",
-    "https://github.com"
+    "https://bt5python.github.io/p120G412/"
 ];
 
-// Simpan status sebelumnya biar bisa deteksi perubahan
 let lastStatus = {};
 
 async function checkSite(url) {
   try {
-    let res = await fetch(url, { method: "GET", mode: "no-cors" });
-    return "ONLINE"; // jika bisa di-fetch
+    await fetch(url, { method: "GET", mode: "no-cors" });
+    return "ONLINE";
   } catch {
     return "OFFLINE";
   }
 }
 
 async function autoCheckNetwork() {
-    for (let site of networkSites) {
-        let status = await checkSite(site);
+  for (let site of networkSites) {
+    let status = await checkSite(site);
 
-        // Kalau belum ada data awal, simpan dulu tanpa alert
-        if (!lastStatus[site]) {
-            lastStatus[site] = status;
-        }
-
-        // Deteksi perubahan OFF → ON
-        if (lastStatus[site] === "OFFLINE" && status === "ONLINE") {
-            alert(`⚡ SITE ONLINE: ${site}`);
-        }
-
-        // Update status
-        lastStatus[site] = status;
+    if (!lastStatus[site]) {
+      lastStatus[site] = status;
     }
+
+    if (lastStatus[site] === "OFFLINE" && status === "ONLINE") {
+      alert(`⚡ SITE ONLINE: ${site}`);
+    }
+
+    lastStatus[site] = status;
+  }
 }
 
-// Cek otomatis setiap 5 detik
 setInterval(autoCheckNetwork, 5000);
 
 </script>
