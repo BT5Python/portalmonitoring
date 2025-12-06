@@ -230,28 +230,30 @@ let lastStatus = {};
 
 async function checkSite(url) {
   try {
-    await fetch(url,{method:"HEAD"})
-.then(res=>{
-    if(res.ok){
-        updateAlerts(url, "ONLINE");
+    const res = await fetch(url, { method: "HEAD" });
+    
+    if (res.ok) {
+      updateAlerts(url, "ONLINE");
+      return "ONLINE";
     } else {
-        updateAlerts(url, "OFFLINE");
+      updateAlerts(url, "OFFLINE");
+      return "OFFLINE";
     }
-})
-.catch(()=>{
+
+  } catch (err) {
     updateAlerts(url, "OFFLINE");
-});
+    return "OFFLINE";
+  }
+}
 
 async function autoCheckNetwork() {
   for (let site of networkSites) {
+
     let status = await checkSite(site);
 
-    if (!lastStatus[site]) {
-      lastStatus[site] = status;
-    }
-
-    if (lastStatus[site] === "OFFLINE" && status === "ONLINE") {
-      alert(`⚡ SITE ONLINE: ${site}`);
+    // jika status berubah
+    if (lastStatus[site] && lastStatus[site] !== status) {
+      alert(`⚡ STATUS CHANGE: ${site} → ${status}`);
     }
 
     lastStatus[site] = status;
@@ -259,6 +261,7 @@ async function autoCheckNetwork() {
 }
 
 setInterval(autoCheckNetwork, 5000);
+autoCheckNetwork();
 
 </script>
 
