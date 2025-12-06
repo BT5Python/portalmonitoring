@@ -59,7 +59,7 @@ html,body{height:100%;margin:0;font-family:ui-monospace, SFMono-Regular, Menlo, 
     </div>
     <div class="menu">
       <button class="active">Overview</button>
-      <button>Network</button>
+      <button id="netBtn">Network</button>
       <button>Processes</button>
       <button>Filesystem</button>
       <button>Alerts</button>
@@ -107,7 +107,14 @@ html,body{height:100%;margin:0;font-family:ui-monospace, SFMono-Regular, Menlo, 
           <button class="btn" id="rebootBtn">Reboot Node</button>
           <button class="btn" id="scanBtn">Run Scan</button>
         </div>
+        
+        <div class="card" id="networkPanel" style="display:none">
+        <h3>Network Storage</h3>
+          <input id="netInput" placeholder="https://example.com" style="width:100%;background:transparent;border:1px solid #00ff00;color:#00ff00;padding:6px;margin-bottom:8px">
+          <button class="btn" id="netSave">SAVE</button>
+          <div id="netList" class="logs" style="height:180px;margin-top:8px"></div>
       </div>
+    </div>
     </section>
 
     <aside class="col">
@@ -220,5 +227,6 @@ document.addEventListener("click", function() {
   forceFullscreen();
 }, { once: true });
 </script>
+  
 </body>
 </html>
