@@ -1,178 +1,191 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MONITORING — TERMINAL</title>
-
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Hacker Monitoring — PORTAL</title>
 <style>
-/* ================================
-   THEME ROOT (FULL GREEN)
-   ================================ */
-:root{
-  --bg:#000;
-  --neon:#00ff00;
-  --glass:rgba(0,255,0,0.05);
-}
-
-/* ================================
-   GLOBAL RESET
-   ================================ */
-*{
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
-  color:var(--neon) !important;
-  background:transparent !important;
-  border-color:rgba(0,255,0,0.4) !important;
-  box-shadow:0 0 10px rgba(0,255,0,0.2) !important;
-}
-
-body{
-  font-family: "Share Tech Mono", monospace;
-  background:#000;
-  overflow:hidden;
-}
-
-/* ================================
-   MATRIX BACKGROUND CANVAS
-   ================================ */
-#matrix{
-  position:fixed;
-  top:0;left:0;
-  width:100vw;
-  height:100vh;
-  z-index:-1;
-}
-
-/* ================================
-   RADAR CANVAS
-   ================================ */
-#radar{
-  width:400px;
-  height:400px;
-  display:block;
-  margin:20px auto;
-  border:1px solid var(--neon);
-}
-
-/* ================================
-   PANEL UI
-   ================================ */
-.container{
-  width:90%;
-  margin:0 auto;
-  margin-top:25px;
-  padding:20px;
-  border:1px solid var(--neon);
-  background:var(--glass) !important;
-  backdrop-filter:blur(3px);
-}
-
-/* ================================
-   TABLE
-   ================================ */
-table{
-  width:100%;
-  border-collapse:collapse;
-  margin-top:15px;
-}
-
-td,th{
-  border:1px solid rgba(0,255,0,0.3) !important;
-  padding:6px;
-}
-
-/* ================================
-   SCROLLBAR
-   ================================ */
-::-webkit-scrollbar{width:8px;}
-::-webkit-scrollbar-thumb{background:rgba(0,255,0,0.6) !important;}
+:root{--bg:#050505;--glass:rgba(255,255,255,0.03);--neon:#00ff66;--muted:#6bffb0}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, "Courier New", monospace;background:linear-gradient(180deg,#000000 0%, #05050a 60%);color:var(--neon)}
+.app{display:grid;grid-template-columns:260px 1fr;grid-template-rows:60px 1fr;gap:14px;height:100vh;padding:18px}
+.header{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;padding:0 18px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));box-shadow:0 6px 30px rgba(0,0,0,0.6);border:1px solid rgba(0,255,102,0.06)}
+.brand{font-weight:700;letter-spacing:1px}
+.header .clock{font-size:14px;color:var(--muted)}
+.sidebar{padding:18px;border-radius:12px;background:rgba(255,255,255,0.02);overflow:auto;border:1px solid rgba(0,255,102,0.03)}
+.menu{display:flex;flex-direction:column;gap:8px}
+.menu button{background:transparent;color:var(--neon);border:1px dashed rgba(0,255,102,0.08);padding:8px 10px;border-radius:8px;text-align:left;cursor:pointer}
+.menu button.active{background:linear-gradient(90deg, rgba(0,255,102,0.04), rgba(0,255,102,0.02));box-shadow:inset 0 0 12px rgba(0,255,102,0.03)}
+.main{padding:18px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.005));border:1px solid rgba(0,255,102,0.03);display:grid;grid-template-columns:1fr 420px;gap:14px}
+.col{display:flex;flex-direction:column;gap:14px}
+.card{background:rgba(0,0,0,0.45);padding:12px;border-radius:10px;border:1px solid rgba(0,255,102,0.03);min-height:120px}
+.card h3{margin:0 0 8px 0;font-size:13px;color:var(--muted)}
+.meter{display:flex;gap:8px;align-items:center}
+.bar{flex:1;height:12px;background:rgba(255,255,255,0.03);border-radius:999px;overflow:hidden}
+.bar > i{display:block;height:100%;background:linear-gradient(90deg,var(--neon), rgba(0,255,102,0.35));width:40%;transition:width 600ms ease}
+.kv{min-width:96px;text-align:right;font-size:13px;color:#b9fcd6}
+.logs{background:#00000055;padding:10px;overflow:auto;height:300px;border-radius:8px;font-size:12px;color:#c9ffd9;line-height:1.45;border:1px solid rgba(0,255,102,0.02)}
+.console{background:#0007;padding:8px;border-radius:6px;border:1px solid rgba(0,255,102,0.04);display:flex;gap:8px}
+.console input{flex:1;background:transparent;border:none;color:var(--neon);outline:none;padding:6px 8px}
+.btn{padding:8px 12px;border-radius:6px;border:1px solid rgba(0,255,102,0.06);background:transparent;color:var(--neon);cursor:pointer}
+.green-dot{width:10px;height:10px;border-radius:50%;background:var(--neon);box-shadow:0 0 6px rgba(0,255,102,0.15)}
+.network-visual{height:260px;border-radius:8px;background:linear-gradient(180deg, rgba(0,0,0,0.6), rgba(0,0,0,0.4));position:relative}
+.node{position:absolute;width:10px;height:10px;border-radius:50%;background:#00ff66;box-shadow:0 0 10px rgba(0,255,102,0.2)}
+.small{font-size:12px;color:#9fffc6}
+.footer-small{font-size:11px;color:#6bffb0;opacity:0.7}
+/* matrix backdrop */
+.matrix{position:absolute;left:0;top:0;right:0;bottom:0;pointer-events:none;opacity:0.08}
+@keyframes floaty{0%{transform:translateY(0)}50%{transform:translateY(-6px)}100%{transform:translateY(0)}}
+.logo-ghost{font-size:28px;color:rgba(0,255,102,0.05);position:absolute;right:24px;top:18px;transform:rotate(-12deg);letter-spacing:4px}
 </style>
-
 </head>
 <body>
+<div class="app">
+  <div class="header">
+    <div class="brand">╚═[ MONITOR-CORE ]═╝ <span class="small">v0.9</span></div>
+    <div style="display:flex;align-items:center;gap:12px">
+      <div class="green-dot" title="status online"></div>
+      <div class="clock" id="clock">--:--:--</div>
+    </div>
+  </div>
 
-<canvas id="matrix"></canvas>
-<canvas id="radar"></canvas>
+  <aside class="sidebar">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+      <div>
+        <div style="font-weight:700">USER — <span class="small">root@net</span></div>
+        <div class="footer-small">IP: 192.168.1.22</div>
+      </div>
+      <div class="logo-ghost">H4CK</div>
+    </div>
+    <div class="menu">
+      <button class="active">Overview</button>
+      <button>Network</button>
+      <button>Processes</button>
+      <button>Filesystem</button>
+      <button>Alerts</button>
+      <button>Settings</button>
+    </div>
+    <div style="margin-top:18px;font-size:12px;color:#9fffc6">
+      <div>Latency: <strong id="lat">23ms</strong></div>
+      <div>Packets/s: <strong id="pps">124</strong></div>
+      <div>Uptime: <strong id="uptime">00:12:03</strong></div>
+    </div>
+  </aside>
 
-<div class="container">
-  <h2>MONITORING TERMINAL — STATUS</h2>
+  <main class="main">
+    <section class="col">
+      <div class="card">
+        <h3>System Overview</h3>
+        <div style="display:flex;gap:12px;align-items:center">
+          <div style="width:220px">
+            <div class="meter"><div class="kv">CPU</div><div class="bar"><i id="cpuBar"></i></div></div>
+            <div class="meter" style="margin-top:8px"><div class="kv">MEM</div><div class="bar"><i id="memBar"></i></div></div>
+            <div class="meter" style="margin-top:8px"><div class="kv">DISK</div><div class="bar"><i id="diskBar"></i></div></div>
+          </div>
+          <div style="flex:1">
+            <div class="small">Top processes</div>
+            <div style="margin-top:8px;font-size:13px">
+              <div id="procList">1. sshd  2. node  3. python</div>
+            </div>
+          </div>
+        </div>
+      </div>
 
-  <table>
-    <tr><th>IP</th><th>STATUS</th><th>LAST UPDATE</th></tr>
-    <tr><td>192.168.1.10</td><td>ONLINE</td><td>OK</td></tr>
-    <tr><td>192.168.1.11</td><td>ONLINE</td><td>OK</td></tr>
-    <tr><td>192.168.1.12</td><td>OFFLINE</td><td>TIMEOUT</td></tr>
-  </table>
+      <div class="card">
+        <h3>Live Logs</h3>
+        <div class="logs" id="logs"></div>
+        <div class="console" style="margin-top:10px">
+          <input id="cmd" placeholder="> type command (simulated)" />
+          <button class="btn" id="runBtn">Run</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Quick Actions</h3>
+        <div style="display:flex;gap:8px">
+          <button class="btn" id="killBtn">Kill Process</button>
+          <button class="btn" id="rebootBtn">Reboot Node</button>
+          <button class="btn" id="scanBtn">Run Scan</button>
+        </div>
+      </div>
+    </section>
+
+    <aside class="col">
+      <div class="card network-visual" id="netVis">
+        <h3>Network Map</h3>
+        <canvas id="netCanvas" width="380" height="200" style="position:absolute;left:10px;top:34px"></canvas>
+      </div>
+
+      <div class="card">
+        <h3>Alerts</h3>
+        <div id="alerts" class="small">
+          <div>— none</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Telemetry</h3>
+        <div class="small">Ping: <span id="ping">14ms</span></div>
+        <div class="small">Download: <span id="dl">12.4MB/s</span></div>
+        <div class="small">Upload: <span id="ul">1.2MB/s</span></div>
+      </div>
+    </aside>
+
+  </main>
+
+  <canvas class="matrix" id="matrix"></canvas>
 </div>
 
 <script>
-/* ==========================================================
-   MATRIX EFFECT (FULL GREEN)
-   ========================================================== */
-let matrix = document.getElementById("matrix");
-let mctx = matrix.getContext("2d");
+// Clock
+function tick(){const d=new Date();document.getElementById('clock').textContent=d.toLocaleString();}
+setInterval(tick,1000);tick();
 
-matrix.width = window.innerWidth;
-matrix.height = window.innerHeight;
+// Fake metrics
+function rand(min,max){return Math.floor(Math.random()*(max-min+1))+min}
+function updateBars(){document.getElementById('cpuBar').style.width=rand(10,94)+'%';document.getElementById('memBar').style.width=rand(20,88)+'%';document.getElementById('diskBar').style.width=rand(30,96)+'%';document.getElementById('lat').textContent=rand(5,120)+'ms';document.getElementById('pps').textContent=rand(20,900);}
+setInterval(updateBars,1500);updateBars();
 
-let letters = "01";
-letters = letters.split("");
+// Logs simulation
+const logsEl=document.getElementById('logs');let logCount=0;function pushLog(txt,level='info'){const t=document.createElement('div');t.textContent=new Date().toLocaleTimeString()+" — "+txt;logsEl.prepend(t);logCount++;if(logCount>200){let children=logsEl.children;for(let i=200;i<children.length;i++)children[i].remove();}}
+const sampleLogs=['connection from 10.0.0.42:443','auth success user root','packet loss detected','process nginx restarted','failed login attempt','scan completed: 12 hosts'];
+setInterval(()=>{pushLog(sampleLogs[Math.floor(Math.random()*sampleLogs.length)])},1100);
 
-let font = 15;
-let columns = matrix.width / font;
-let drops = [];
-for(let i=0;i<columns;i++) drops[i]=1;
+// Command input
+document.getElementById('runBtn').addEventListener('click',()=>{const v=document.getElementById('cmd').value.trim();if(!v) return;pushLog('> '+v);document.getElementById('cmd').value='';});
 
-function drawMatrix(){
-  mctx.fillStyle = "rgba(0,255,0,0.06)";
-  mctx.fillRect(0,0,matrix.width,matrix.height);
-  
-  mctx.fillStyle = "#00ff00";
-  mctx.font = font+"px monospace";
-  
-  for(let i=0;i<drops.length;i++){
-    let text = letters[Math.floor(Math.random()*letters.length)];
-    mctx.fillText(text,i*font,drops[i]*font);
-    if(drops[i]*font > matrix.height && Math.random()>0.975) drops[i]=0;
-    drops[i]++;
-  }
+// Buttons
+document.getElementById('killBtn').addEventListener('click',()=>pushLog('SIGKILL sent to pid '+rand(100,999)));
+document.getElementById('rebootBtn').addEventListener('click',()=>pushLog('Reboot scheduled in 1 minute'));
+document.getElementById('scanBtn').addEventListener('click',()=>pushLog('Port scan started — 64 targets'));
+
+// Network canvas drawing
+const canvas=document.getElementById('netCanvas');const ctx=canvas.getContext('2d');const nodes=[];for(let i=0;i<8;i++){nodes.push({x:30+Math.random()*320,y:20+Math.random()*160,r:Math.random()*3+3})}
+function drawNet(){ctx.clearRect(0,0,canvas.width,canvas.height);ctx.globalCompositeOperation='lighter';for(let a=0;a<nodes.length;a++){for(let b=a+1;b<nodes.length;b++){const dx=nodes[a].x-nodes[b].x;const dy=nodes[a].y-nodes[b].y;const d=Math.sqrt(dx*dx+dy*dy);if(d<140){ctx.lineWidth=0.8;ctx.strokeStyle='rgba(0,255,102,'+(0.3 - d/500)+')';ctx.beginPath();ctx.moveTo(nodes[a].x,nodes[a].y);ctx.lineTo(nodes[b].x,nodes[b].y);ctx.stroke();}}}
+for(let n of nodes){ctx.beginPath();ctx.fillStyle='rgba(0,255,102,0.9)';ctx.arc(n.x,n.y,n.r,0,Math.PI*2);ctx.fill();
+
+    // --- Draw connecting lines between radar points ---
+    if (window._radarPts && window._radarPts.length > 1) {
+      ctx.strokeStyle = 'rgba(0,255,0,0.5)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      for (let i = 0; i < window._radarPts.length; i++) {
+        const next = window._radarPts[(i + 1) % window._radarPts.length];
+        ctx.moveTo(window._radarPts[i].x, window._radarPts[i].y);
+        ctx.lineTo(next.x, next.y);
+      }
+      ctx.stroke();
+    }}
 }
-setInterval(drawMatrix,33);
+setInterval(()=>{for(let n of nodes){n.x += Math.random()*6-3; n.y += Math.random()*6-3; n.x=Math.max(8,Math.min(canvas.width-8,n.x)); n.y=Math.max(8,Math.min(canvas.height-8,n.y));} drawNet()},500);
 
+// Matrix backdrop
+const m=document.getElementById('matrix');m.width=window.innerWidth; m.height=window.innerHeight;const mctx=m.getContext('2d');const cols=Math.floor(m.width/12);const drops=[];for(let i=0;i<cols;i++)drops[i]=Math.floor(Math.random()*m.height/12);
+function matrix(){mctx.fillStyle='rgba(0,0,0,0.04)';mctx.fillRect(0,0,m.width,m.height);mctx.fillStyle='rgba(0,255,102,0.06)';mctx.font='12px monospace';for(let i=0;i<cols;i++){const text=String.fromCharCode(33+Math.random()*33);mctx.fillText(text,i*12,drops[i]*12);drops[i]++;if(drops[i]*12>m.height && Math.random()>0.975) drops[i]=0;}}
+setInterval(matrix,45);
 
-/* ==========================================================
-   RADAR LOOP (FULL GREEN)
-   ========================================================== */
-let radar = document.getElementById("radar");
-let ctx = radar.getContext("2d");
-
-function drawRadar(){
-  ctx.clearRect(0,0,400,400);
-
-  ctx.strokeStyle="rgba(0,255,0,0.4)";
-  ctx.beginPath();
-  ctx.arc(200,200,180,0,Math.PI*2);
-  ctx.stroke();
-
-  ctx.beginPath();
-  ctx.arc(200,200,120,0,Math.PI*2);
-  ctx.stroke();
-
-  ctx.beginPath();
-  ctx.arc(200,200,60,0,Math.PI*2);
-  ctx.stroke();
-
-  let angle = Date.now()/50;
-  ctx.strokeStyle="rgba(0,255,0,0.9)";
-  ctx.beginPath();
-  ctx.moveTo(200,200);
-  ctx.lineTo(200+180*Math.cos(angle),200+180*Math.sin(angle));
-  ctx.stroke();
-}
-setInterval(drawRadar,40);
+// Responsive
+window.addEventListener('resize',()=>{m.width=window.innerWidth;m.height=window.innerHeight});
 </script>
-
 </body>
 </html>
