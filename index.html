@@ -1,182 +1,191 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="id">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>MONITORING — RADAR TERMINAL</title>
-
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Hacker Monitoring — PORTAL</title>
 <style>
-/* =========================
-   FONT & RESET
-========================= */
-@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
-
-*{
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
-}
-
-/* hanya teks */
-body, h1, h2, h3, h4, p, td, th, span, a {
-  color:#00ff00 !important;
-}
-
-/* =========================
-   GLOBAL
-========================= */
-body {
-  font-family: 'Share Tech Mono', monospace;
-  background: #000;               /* <-- FULL HITAM */
-  color: #00ff00;                /* <-- HANYA TEKS HIJAU */
-  overflow: hidden;
-}
-
-.wrapper {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  grid-auto-rows: 32vh;
-  gap: 8px;
-  padding: 10px;
-}
-
-/* =========================
-   MONITOR BOX
-========================= */
-.box {
-  background: rgba(0, 255, 0, 0.04);   /* transparan gelap, BUKAN ijo solid */
-  border: 1px solid #00ff00;
-  padding: 10px;
-  border-radius: 6px;
-  position: relative;
-}
-
-/* judul kotak */
-.box h2 {
-  font-size: 14px;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  margin-bottom: 6px;
-}
-
-/* =========================
-   RADAR (DOT)
-========================= */
-.radar {
-  width: 100%;
-  height: 100%;
-  background: radial-gradient(circle at center, rgba(0,255,0,0.15), transparent 70%);
-  border: 1px solid rgba(0,255,0,0.3);
-  position: relative;
-  overflow: hidden;
-}
-
-/* titik */
-.dot {
-  width: 6px;
-  height: 6px;
-  background: #00ff00;
-  border-radius: 50%;
-  position: absolute;
-  animation: blink 1s infinite alternate;
-}
-
-@keyframes blink {
-  from { opacity: .2 }
-  to   { opacity: 1 }
-}
-
-/* =========================
-   SCAN LINE
-========================= */
-.scan-line {
-  position: absolute;
-  width: 2px;
-  height: 100%;
-  background: rgba(0,255,0,0.4);
-  left: 0;
-  animation: scan 4s linear infinite;
-}
-
-@keyframes scan {
-  from { left: 0 }
-  to   { left: 100% }
-}
-
-/* =========================
-   TEXT DUMMY
-========================= */
-.log {
-  font-size: 11px;
-  line-height: 1.4;
-  opacity: .7;
-}
-
-/* =========================
-   NO PUTIH — FIX UTAMA
-========================= */
-::-webkit-scrollbar {
-  width: 0 !important;
-}
+:root{--bg:#00ff00;--glass:rgba(255,255,255,0.03);--neon:#00ff00;--muted:#00ff00}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, "Courier New", monospace;background:linear-gradient(180deg,#000000 0%, #05050a 60%);color:var(--neon)}
+.app{display:grid;grid-template-columns:260px 1fr;grid-template-rows:60px 1fr;gap:14px;height:100vh;padding:18px}
+.header{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;padding:0 18px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));box-shadow:0 6px 30px rgba(0,0,0,0.6);border:1px solid rgba(0,255,102,0.06)}
+.brand{font-weight:700;letter-spacing:1px}
+.header .clock{font-size:14px;color:var(--muted)}
+.sidebar{padding:18px;border-radius:12px;background:rgba(255,255,255,0.02);overflow:auto;border:1px solid rgba(0,255,102,0.03)}
+.menu{display:flex;flex-direction:column;gap:8px}
+.menu button{background:transparent;color:var(--neon);border:1px dashed rgba(0,255,102,0.08);padding:8px 10px;border-radius:8px;text-align:left;cursor:pointer}
+.menu button.active{background:linear-gradient(90deg, rgba(0,255,102,0.04), rgba(0,255,102,0.02));box-shadow:inset 0 0 12px rgba(0,255,102,0.03)}
+.main{padding:18px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.005));border:1px solid rgba(0,255,102,0.03);display:grid;grid-template-columns:1fr 420px;gap:14px}
+.col{display:flex;flex-direction:column;gap:14px}
+.card{background:rgba(0,0,0,0.45);padding:12px;border-radius:10px;border:1px solid rgba(0,255,102,0.03);min-height:120px}
+.card h3{margin:0 0 8px 0;font-size:13px;color:var(--muted)}
+.meter{display:flex;gap:8px;align-items:center}
+.bar{flex:1;height:12px;background:rgba(255,255,255,0.03);border-radius:999px;overflow:hidden}
+.bar > i{display:block;height:100%;background:linear-gradient(90deg,var(--neon), rgba(0,255,102,0.35));width:40%;transition:width 600ms ease}
+.kv{min-width:96px;text-align:right;font-size:13px;color:#b9fcd6}
+.logs{background:#00000055;padding:10px;overflow:auto;height:300px;border-radius:8px;font-size:12px;color:#c9ffd9;line-height:1.45;border:1px solid rgba(0,255,102,0.02)}
+.console{background:#0007;padding:8px;border-radius:6px;border:1px solid rgba(0,255,102,0.04);display:flex;gap:8px}
+.console input{flex:1;background:transparent;border:none;color:var(--neon);outline:none;padding:6px 8px}
+.btn{padding:8px 12px;border-radius:6px;border:1px solid rgba(0,255,102,0.06);background:transparent;color:var(--neon);cursor:pointer}
+.green-dot{width:10px;height:10px;border-radius:50%;background:var(--neon);box-shadow:0 0 6px rgba(0,255,102,0.15)}
+.network-visual{height:260px;border-radius:8px;background:linear-gradient(180deg, rgba(0,0,0,0.6), rgba(0,0,0,0.4));position:relative}
+.node{position:absolute;width:10px;height:10px;border-radius:50%;background:#00ff66;box-shadow:0 0 10px rgba(0,255,102,0.2)}
+.small{font-size:12px;color:#9fffc6}
+.footer-small{font-size:11px;color:#6bffb0;opacity:0.7}
+/* matrix backdrop */
+.matrix{position:absolute;left:0;top:0;right:0;bottom:0;pointer-events:none;opacity:0.08}
+@keyframes floaty{0%{transform:translateY(0)}50%{transform:translateY(-6px)}100%{transform:translateY(0)}}
+.logo-ghost{font-size:28px;color:rgba(0,255,102,0.05);position:absolute;right:24px;top:18px;transform:rotate(-12deg);letter-spacing:4px}
 </style>
-
 </head>
 <body>
-
-<div class="wrapper">
-
-  <!-- BOX 1 RADAR -->
-  <div class="box">
-    <h2>RADAR SCAN</h2>
-    <div class="radar" id="radar"></div>
-  </div>
-
-  <!-- BOX 2 LOG -->
-  <div class="box">
-    <h2>REALTIME LOG</h2>
-    <div class="log" id="log-area">
-      [INIT] Monitoring started...<br>
-      [OK] Database online...<br>
-      [SCAN] Finding activity...<br>
+<div class="app">
+  <div class="header">
+    <div class="brand">╚═[ MONITOR-CORE ]═╝ <span class="small">v0.9</span></div>
+    <div style="display:flex;align-items:center;gap:12px">
+      <div class="green-dot" title="status online"></div>
+      <div class="clock" id="clock">--:--:--</div>
     </div>
   </div>
 
-  <!-- BOX 3 STATUS -->
-  <div class="box">
-    <h2>STATUS SYSTEM</h2>
-    <div class="log">
-      SERVER : ACTIVE<br>
-      FETCH  : RUNNING<br>
-      MEMORY : NORMAL<br>
-      RADAR  : ONLINE<br>
+  <aside class="sidebar">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+      <div>
+        <div style="font-weight:700">USER — <span class="small">root@net</span></div>
+        <div class="footer-small">IP: 192.168.1.22</div>
+      </div>
+      <div class="logo-ghost">H4CK</div>
     </div>
-  </div>
+    <div class="menu">
+      <button class="active">Overview</button>
+      <button>Network</button>
+      <button>Processes</button>
+      <button>Filesystem</button>
+      <button>Alerts</button>
+      <button>Settings</button>
+    </div>
+    <div style="margin-top:18px;font-size:12px;color:#9fffc6">
+      <div>Latency: <strong id="lat">23ms</strong></div>
+      <div>Packets/s: <strong id="pps">124</strong></div>
+      <div>Uptime: <strong id="uptime">00:12:03</strong></div>
+    </div>
+  </aside>
 
-  <!-- BANK KOTAK KOSONG SIAP ISI -->
-  <div class="box"><h2>CHANNEL 4</h2></div>
-  <div class="box"><h2>CHANNEL 5</h2></div>
-  <div class="box"><h2>CHANNEL 6</h2></div>
+  <main class="main">
+    <section class="col">
+      <div class="card">
+        <h3>System Overview</h3>
+        <div style="display:flex;gap:12px;align-items:center">
+          <div style="width:220px">
+            <div class="meter"><div class="kv">CPU</div><div class="bar"><i id="cpuBar"></i></div></div>
+            <div class="meter" style="margin-top:8px"><div class="kv">MEM</div><div class="bar"><i id="memBar"></i></div></div>
+            <div class="meter" style="margin-top:8px"><div class="kv">DISK</div><div class="bar"><i id="diskBar"></i></div></div>
+          </div>
+          <div style="flex:1">
+            <div class="small">Top processes</div>
+            <div style="margin-top:8px;font-size:13px">
+              <div id="procList">1. sshd  2. node  3. python</div>
+            </div>
+          </div>
+        </div>
+      </div>
 
+      <div class="card">
+        <h3>Live Logs</h3>
+        <div class="logs" id="logs"></div>
+        <div class="console" style="margin-top:10px">
+          <input id="cmd" placeholder="> type command (simulated)" />
+          <button class="btn" id="runBtn">Run</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Quick Actions</h3>
+        <div style="display:flex;gap:8px">
+          <button class="btn" id="killBtn">Kill Process</button>
+          <button class="btn" id="rebootBtn">Reboot Node</button>
+          <button class="btn" id="scanBtn">Run Scan</button>
+        </div>
+      </div>
+    </section>
+
+    <aside class="col">
+      <div class="card network-visual" id="netVis">
+        <h3>Network Map</h3>
+        <canvas id="netCanvas" width="380" height="200" style="position:absolute;left:10px;top:34px"></canvas>
+      </div>
+
+      <div class="card">
+        <h3>Alerts</h3>
+        <div id="alerts" class="small">
+          <div>— none</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Telemetry</h3>
+        <div class="small">Ping: <span id="ping">14ms</span></div>
+        <div class="small">Download: <span id="dl">12.4MB/s</span></div>
+        <div class="small">Upload: <span id="ul">1.2MB/s</span></div>
+      </div>
+    </aside>
+
+  </main>
+
+  <canvas class="matrix" id="matrix"></canvas>
 </div>
 
-
-<!-- =========================
-     JAVASCRIPT RADAR DOT
-========================= -->
 <script>
-function randomDot() {
-  const radar = document.getElementById("radar");
-  const dot = document.createElement("div");
-  dot.className = "dot";
-  dot.style.top = Math.random() * 100 + "%";
-  dot.style.left = Math.random() * 100 + "%";
-  radar.appendChild(dot);
+// Clock
+function tick(){const d=new Date();document.getElementById('clock').textContent=d.toLocaleString();}
+setInterval(tick,1000);tick();
 
-  setTimeout(() => dot.remove(), 2000);
+// Fake metrics
+function rand(min,max){return Math.floor(Math.random()*(max-min+1))+min}
+function updateBars(){document.getElementById('cpuBar').style.width=rand(10,94)+'%';document.getElementById('memBar').style.width=rand(20,88)+'%';document.getElementById('diskBar').style.width=rand(30,96)+'%';document.getElementById('lat').textContent=rand(5,120)+'ms';document.getElementById('pps').textContent=rand(20,900);}
+setInterval(updateBars,1500);updateBars();
+
+// Logs simulation
+const logsEl=document.getElementById('logs');let logCount=0;function pushLog(txt,level='info'){const t=document.createElement('div');t.textContent=new Date().toLocaleTimeString()+" — "+txt;logsEl.prepend(t);logCount++;if(logCount>200){let children=logsEl.children;for(let i=200;i<children.length;i++)children[i].remove();}}
+const sampleLogs=['connection from 10.0.0.42:443','auth success user root','packet loss detected','process nginx restarted','failed login attempt','scan completed: 12 hosts'];
+setInterval(()=>{pushLog(sampleLogs[Math.floor(Math.random()*sampleLogs.length)])},1100);
+
+// Command input
+document.getElementById('runBtn').addEventListener('click',()=>{const v=document.getElementById('cmd').value.trim();if(!v) return;pushLog('> '+v);document.getElementById('cmd').value='';});
+
+// Buttons
+document.getElementById('killBtn').addEventListener('click',()=>pushLog('SIGKILL sent to pid '+rand(100,999)));
+document.getElementById('rebootBtn').addEventListener('click',()=>pushLog('Reboot scheduled in 1 minute'));
+document.getElementById('scanBtn').addEventListener('click',()=>pushLog('Port scan started — 64 targets'));
+
+// Network canvas drawing
+const canvas=document.getElementById('netCanvas');const ctx=canvas.getContext('2d');const nodes=[];for(let i=0;i<8;i++){nodes.push({x:30+Math.random()*320,y:20+Math.random()*160,r:Math.random()*3+3})}
+function drawNet(){ctx.clearRect(0,0,canvas.width,canvas.height);ctx.globalCompositeOperation='lighter';for(let a=0;a<nodes.length;a++){for(let b=a+1;b<nodes.length;b++){const dx=nodes[a].x-nodes[b].x;const dy=nodes[a].y-nodes[b].y;const d=Math.sqrt(dx*dx+dy*dy);if(d<140){ctx.lineWidth=0.8;ctx.strokeStyle='rgba(0,255,102,'+(0.3 - d/500)+')';ctx.beginPath();ctx.moveTo(nodes[a].x,nodes[a].y);ctx.lineTo(nodes[b].x,nodes[b].y);ctx.stroke();}}}
+for(let n of nodes){ctx.beginPath();ctx.fillStyle='rgba(0,255,102,0.9)';ctx.arc(n.x,n.y,n.r,0,Math.PI*2);ctx.fill();
+
+    // --- Draw connecting lines between radar points ---
+    if (window._radarPts && window._radarPts.length > 1) {
+      ctx.strokeStyle = 'rgba(0,255,0,0.5)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      for (let i = 0; i < window._radarPts.length; i++) {
+        const next = window._radarPts[(i + 1) % window._radarPts.length];
+        ctx.moveTo(window._radarPts[i].x, window._radarPts[i].y);
+        ctx.lineTo(next.x, next.y);
+      }
+      ctx.stroke();
+    }}
 }
+setInterval(()=>{for(let n of nodes){n.x += Math.random()*6-3; n.y += Math.random()*6-3; n.x=Math.max(8,Math.min(canvas.width-8,n.x)); n.y=Math.max(8,Math.min(canvas.height-8,n.y));} drawNet()},500);
 
-setInterval(randomDot, 250);
+// Matrix backdrop
+const m=document.getElementById('matrix');m.width=window.innerWidth; m.height=window.innerHeight;const mctx=m.getContext('2d');const cols=Math.floor(m.width/12);const drops=[];for(let i=0;i<cols;i++)drops[i]=Math.floor(Math.random()*m.height/12);
+function matrix(){mctx.fillStyle='rgba(0,0,0,0.04)';mctx.fillRect(0,0,m.width,m.height);mctx.fillStyle='rgba(0,255,102,0.06)';mctx.font='12px monospace';for(let i=0;i<cols;i++){const text=String.fromCharCode(33+Math.random()*33);mctx.fillText(text,i*12,drops[i]*12);drops[i]++;if(drops[i]*12>m.height && Math.random()>0.975) drops[i]=0;}}
+setInterval(matrix,45);
+
+// Responsive
+window.addEventListener('resize',()=>{m.width=window.innerWidth;m.height=window.innerHeight});
 </script>
-
 </body>
 </html>
