@@ -136,32 +136,6 @@ html,body{height:100%;margin:0;font-family:ui-monospace, SFMono-Regular, Menlo, 
   <canvas class="matrix" id="matrix"></canvas>
 </div>
 
-let networkSites = [
-    "https://google.com",
-    "https://bt5python.github.io",
-    "https://github.com"
-];
-
-  async function checkSite(url) {
-    try {
-        let res = await fetch(url, { method: "HEAD" });
-        return res.ok ? "ONLINE" : "OFFLINE";
-    } catch {
-        return "OFFLINE";
-    }
-}
-  
-async function checkNetwork() {
-    let report = "";
-
-    for (let site of networkSites) {
-        let status = await checkSite(site);
-        report += `${site} ➜ ${status}\n`;
-    }
-
-    alert("NETWORK STATUS:\n\n" + report);
-}
-
 <script>
 // Clock
 function tick(){const d=new Date();document.getElementById('clock').textContent=d.toLocaleString();}
@@ -229,7 +203,7 @@ document.getElementById("netBtn").addEventListener("click", () => {
     alert("Alamat disimpan!");
   }
 });
-</script>  
+</script>
 <script>
 document.getElementById("netBtn").addEventListener("contextmenu", (e) => {
   e.preventDefault();
