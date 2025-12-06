@@ -220,12 +220,12 @@ let networkSites = [
 let lastStatus = {};
 
 async function checkSite(url) {
-    try {
-        let res = await fetch(url, { method: "HEAD" });
-        return res.ok ? "ONLINE" : "OFFLINE";
-    } catch {
-        return "OFFLINE";
-    }
+  try {
+    let res = await fetch(url, { method: "GET", mode: "no-cors" });
+    return "ONLINE"; // jika bisa di-fetch
+  } catch {
+    return "OFFLINE";
+  }
 }
 
 async function autoCheckNetwork() {
