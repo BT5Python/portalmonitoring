@@ -226,6 +226,15 @@ if (navigator.userAgent.includes("wv") || navigator.userAgent.includes("Android"
 document.addEventListener("click", function() {
   forceFullscreen();
 }, { once: true });
+<div class="card" id="networkPanel" style="display:none">
+  <h3>Network Storage</h3>
+
+  <input id="netInput" placeholder="https://example.com" style="width:100%;background:transparent;border:1px solid #00ff00;color:#00ff00;padding:6px;margin-bottom:8px">
+
+  <button class="btn" id="netSave">SAVE</button>
+
+  <div id="netList" class="logs" style="height:180px;margin-top:8px"></div>
+</div>
 </script>
   
 </body>
