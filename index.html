@@ -186,6 +186,15 @@ setInterval(matrix,45);
 
 // Responsive
 window.addEventListener('resize',()=>{m.width=window.innerWidth;m.height=window.innerHeight});
+
+function updateAlerts(msg, status){
+  let box = document.getElementById("alertsBox");
+  let line = document.createElement("div");
+
+  line.innerHTML = "— " + msg + " | " + status;
+  box.appendChild(line);
+}
+
 </script>
 <script>
 // ====== NETWORK SAVE REAL TANPA UBAH UI ======
@@ -221,12 +230,17 @@ let lastStatus = {};
 
 async function checkSite(url) {
   try {
-    await fetch(url, { method: "GET", mode: "no-cors" });
-    return "ONLINE";
-  } catch {
-    return "OFFLINE";
-  }
-}
+    await fetch(url,{method:"HEAD"})
+.then(res=>{
+    if(res.ok){
+        updateAlerts(url, "ONLINE");
+    } else {
+        updateAlerts(url, "OFFLINE");
+    }
+})
+.catch(()=>{
+    updateAlerts(url, "OFFLINE");
+});
 
 async function autoCheckNetwork() {
   for (let site of networkSites) {
