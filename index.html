@@ -193,9 +193,8 @@ window.addEventListener('resize',()=>{m.width=window.innerWidth;m.height=window.
 let savedNetwork = JSON.parse(localStorage.getItem("savedNetwork")) || [];
 
 // Ketika tombol Network diklik
-document.getElementById("networkBtn").addEventListener("click", () => {
+document.getElementById("netBtn").addEventListener("click", () => {
 
-  // popup input sederhana
   let url = prompt("Masukkan alamat web:");
 
   if (url && url.trim() !== "") {
@@ -206,7 +205,7 @@ document.getElementById("networkBtn").addEventListener("click", () => {
 });
 </script>
 <script>
-document.getElementById("networkBtn").addEventListener("contextmenu", (e) => {
+document.getElementById("netBtn").addEventListener("contextmenu", (e) => {
   e.preventDefault();
   alert( JSON.stringify(savedNetwork, null, 2) );
 });
