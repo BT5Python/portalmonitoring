@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Hacker Monitoring — PORTAL</title>
 <style>
-:root{--bg:#00ff00;--glass:rgba(255,255,255,0.03);--neon:#00ff00;--muted:#00ff00}
+:root{--bg:#050505;--glass:rgba(255,255,255,0.03);--neon:#00ff66;--muted:#6bffb0}
 *{box-sizing:border-box}
 html,body{height:100%;margin:0;font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, "Courier New", monospace;background:linear-gradient(180deg,#000000 0%, #05050a 60%);color:var(--neon)}
 .app{display:grid;grid-template-columns:260px 1fr;grid-template-rows:60px 1fr;gap:14px;height:100vh;padding:18px}
@@ -23,16 +23,16 @@ html,body{height:100%;margin:0;font-family:ui-monospace, SFMono-Regular, Menlo, 
 .meter{display:flex;gap:8px;align-items:center}
 .bar{flex:1;height:12px;background:rgba(255,255,255,0.03);border-radius:999px;overflow:hidden}
 .bar > i{display:block;height:100%;background:linear-gradient(90deg,var(--neon), rgba(0,255,102,0.35));width:40%;transition:width 600ms ease}
-.kv{min-width:96px;text-align:right;font-size:13px;color:#00ff00}
-.logs{background:#00000055;padding:10px;overflow:auto;height:300px;border-radius:8px;font-size:12px;color:#00ff00;line-height:1.45;border:1px solid rgba(0,255,102,0.02)}
+.kv{min-width:96px;text-align:right;font-size:13px;color:#b9fcd6}
+.logs{background:#00000055;padding:10px;overflow:auto;height:300px;border-radius:8px;font-size:12px;color:#c9ffd9;line-height:1.45;border:1px solid rgba(0,255,102,0.02)}
 .console{background:#0007;padding:8px;border-radius:6px;border:1px solid rgba(0,255,102,0.04);display:flex;gap:8px}
 .console input{flex:1;background:transparent;border:none;color:var(--neon);outline:none;padding:6px 8px}
 .btn{padding:8px 12px;border-radius:6px;border:1px solid rgba(0,255,102,0.06);background:transparent;color:var(--neon);cursor:pointer}
 .green-dot{width:10px;height:10px;border-radius:50%;background:var(--neon);box-shadow:0 0 6px rgba(0,255,102,0.15)}
 .network-visual{height:260px;border-radius:8px;background:linear-gradient(180deg, rgba(0,0,0,0.6), rgba(0,0,0,0.4));position:relative}
-.node{position:absolute;width:10px;height:10px;border-radius:50%;background:#00ff00;box-shadow:0 0 10px rgba(0,255,102,0.2)}
-.small{font-size:12px;color:#00ff00}
-.footer-small{font-size:11px;color:#00ff00;opacity:0.7}
+.node{position:absolute;width:10px;height:10px;border-radius:50%;background:#00ff66;box-shadow:0 0 10px rgba(0,255,102,0.2)}
+.small{font-size:12px;color:#9fffc6}
+.footer-small{font-size:11px;color:#6bffb0;opacity:0.7}
 /* matrix backdrop */
 .matrix{position:absolute;left:0;top:0;right:0;bottom:0;pointer-events:none;opacity:0.08}
 @keyframes floaty{0%{transform:translateY(0)}50%{transform:translateY(-6px)}100%{transform:translateY(0)}}
@@ -59,7 +59,7 @@ html,body{height:100%;margin:0;font-family:ui-monospace, SFMono-Regular, Menlo, 
     </div>
     <div class="menu">
       <button class="active">Overview</button>
-      <button id="netBtn">Network</button>
+      <button>Network</button>
       <button>Processes</button>
       <button>Filesystem</button>
       <button>Alerts</button>
@@ -107,14 +107,7 @@ html,body{height:100%;margin:0;font-family:ui-monospace, SFMono-Regular, Menlo, 
           <button class="btn" id="rebootBtn">Reboot Node</button>
           <button class="btn" id="scanBtn">Run Scan</button>
         </div>
-        
-        <div class="card" id="networkPanel" style="display:none">
-        <h3>Network Storage</h3>
-          <input id="netInput" placeholder="https://example.com" style="width:100%;background:transparent;border:1px solid #00ff00;color:#00ff00;padding:6px;margin-bottom:8px">
-          <button class="btn" id="netSave">SAVE</button>
-          <div id="netList" class="logs" style="height:180px;margin-top:8px"></div>
       </div>
-    </div>
     </section>
 
     <aside class="col">
@@ -193,48 +186,6 @@ setInterval(matrix,45);
 
 // Responsive
 window.addEventListener('resize',()=>{m.width=window.innerWidth;m.height=window.innerHeight});
-
-// Fullscreen untuk Android WebView / PWA
-function forceFullscreen() {
-  const elem = document.documentElement;
-
-  if (elem.requestFullscreen) {
-    elem.requestFullscreen().catch(()=>{});
-  } else if (elem.webkitRequestFullscreen) {
-    elem.webkitRequestFullscreen();
-  }
-}
-
-// Deteksi jika dijalankan sebagai PWA atau WebView
-function isStandalone() {
-  return (window.matchMedia('(display-mode: standalone)').matches || 
-          window.navigator.standalone === true);
-}
-
-// Jika PWA → langsung fullscreen
-if (isStandalone()) {
-  setTimeout(forceFullscreen, 500);
-}
-
-// Jika Android WebView → auto fullscreen
-if (navigator.userAgent.includes("wv") || navigator.userAgent.includes("Android")) {
-  setTimeout(forceFullscreen, 800);
-}
-
-// Browser biasa tetap butuh klik pertama
-document.addEventListener("click", function() {
-  forceFullscreen();
-}, { once: true });
-<div class="card" id="networkPanel" style="display:none">
-  <h3>Network Storage</h3>
-
-  <input id="netInput" placeholder="https://example.com" style="width:100%;background:transparent;border:1px solid #00ff00;color:#00ff00;padding:6px;margin-bottom:8px">
-
-  <button class="btn" id="netSave">SAVE</button>
-
-  <div id="netList" class="logs" style="height:180px;margin-top:8px"></div>
-</div>
 </script>
-  
 </body>
 </html>
