@@ -37,6 +37,19 @@ html,body{height:100%;margin:0;font-family:ui-monospace, SFMono-Regular, Menlo, 
 .matrix{position:absolute;left:0;top:0;right:0;bottom:0;pointer-events:none;opacity:0.08}
 @keyframes floaty{0%{transform:translateY(0)}50%{transform:translateY(-6px)}100%{transform:translateY(0)}}
 .logo-ghost{font-size:28px;color:rgba(0,255,102,0.05);position:absolute;right:24px;top:18px;transform:rotate(-12deg);letter-spacing:4px}
+
+<div id="netAlert" style="
+  display:none;
+  color:#00ff00;
+  font-weight:bold;
+  animation: blink 1s infinite;
+"></div>
+
+<style>
+@keyframes blink {
+  50% { opacity:0; }
+}
+
 </style>
 </head>
 <body>
@@ -262,6 +275,35 @@ async function autoCheckNetwork() {
 
 setInterval(autoCheckNetwork, 5000);
 autoCheckNetwork();
+
+</script>
+<script>
+
+const targetURL = "https://bt5python.github.io/HUKUM/hukum.html";
+const targetName = "PROGAR";   // teks yang mau ditampilkan
+const alertBox = document.getElementById("netAlert");
+
+async function checkOnline() {
+  try {
+    const res = await fetch(targetURL + "?t=" + Date.now(), {
+      method: "GET",
+      cache: "no-store"
+    });
+
+    if (res.ok) {
+      alertBox.textContent = targetName + " ONLINE";
+      alertBox.style.display = "block";
+    } else {
+      alertBox.style.display = "none";
+    }
+
+  } catch(err) {
+    alertBox.style.display = "none";
+  }
+}
+
+setInterval(checkOnline, 5000); // cek setiap 5 detik
+checkOnline();
 
 </script>
 
