@@ -2,20 +2,12 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>TACTICAL MAP + STREET VIEW</title>
+<title>TACTICAL TRACKING</title>
 
 <link rel="stylesheet"
 href="https://unpkg.com/leaflet/dist/leaflet.css">
 
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-
-<script src="
-https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.js">
-</script>
-
-<link rel="stylesheet"
-href="
-https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.css">
 
 <style>
 
@@ -24,11 +16,12 @@ margin:0;
 background:black;
 font-family:Courier New;
 overflow:hidden;
+color:#00ff00;
 }
 
 #map{
-height:100vh;
 width:100%;
+height:100vh;
 }
 
 #panel{
@@ -40,15 +33,18 @@ left:10px;
 
 z-index:9999;
 
-background:
-rgba(0,0,0,.8);
+width:280px;
 
-padding:10px;
+background:
+rgba(0,0,0,.85);
 
 border:
 1px solid #00ff00;
 
-color:#00ff00;
+padding:10px;
+
+box-shadow:
+0 0 15px #00ff00;
 
 }
 
@@ -69,47 +65,23 @@ cursor:pointer;
 
 }
 
-#street{
+.member{
 
-position:absolute;
+border-bottom:
+1px solid #00ff0030;
 
-top:0;
-left:0;
+padding:5px;
 
-width:100%;
-height:100%;
-
-z-index:99999;
-
-display:none;
+margin-top:5px;
 
 }
 
-.grid{
+.online{
+color:#00ff00;
+}
 
-position:absolute;
-
-width:100%;
-height:100%;
-
-background-image:
-
-linear-gradient(
-#00ff0020 1px,
-transparent 1px),
-
-linear-gradient(
-90deg,
-#00ff0020 1px,
-transparent 1px);
-
-background-size:
-40px 40px;
-
-pointer-events:none;
-
-z-index:999;
-
+.offline{
+color:red;
 }
 
 </style>
@@ -118,103 +90,243 @@ z-index:999;
 
 <body>
 
-<div class="grid"></div>
-
 <div id="panel">
 
-SYSTEM ONLINE
+TACTICAL TRACKER
 
 <br><br>
 
-<button onclick="mulaiGPS()">
+<button onclick="mulaiTracking()">
 
-📡 TRACK
-
-</button>
-
-<button onclick="bukaStreet()">
-
-🛰 STREET VIEW
+📡 START
 
 </button>
 
-<button onclick="tutupStreet()">
+<button onclick="modeSatelit()">
 
-❌ CLOSE
+🛰 SAT
 
 </button>
 
-<br><br>
+<button onclick="modeNormal()">
 
-LAT :
-<span id="lat">0</span>
+🗺 MAP
 
-<br>
+</button>
 
-LON :
-<span id="lon">0</span>
+<hr>
+
+<div id="anggotaList">
+
+BELUM ADA DATA
+
+</div>
 
 </div>
 
 <div id="map"></div>
-
-<div id="street"></div>
 
 <script>
 
 let map =
 L.map('map')
 .setView(
-[-6.914744,
-107.609810],
-17
+[-6.914744,107.609810],
+13
 );
 
+let normal =
+L.tileLayer(
+'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
+);
+
+let sat =
 L.tileLayer(
 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'
-).addTo(map);
+);
 
-let marker =
+normal.addTo(map);
+
+function modeSatelit(){
+
+map.removeLayer(normal);
+
+sat.addTo(map);
+
+}
+
+function modeNormal(){
+
+map.removeLayer(sat);
+
+normal.addTo(map);
+
+}
+
+let anggota={};
+
+function updateAnggota(
+id,
+nama,
+lat,
+lon
+){
+
+if(!anggota[id]){
+
+anggota[id]={
+
+marker:
 L.marker(
-[-6.914744,
-107.609810]
-)
-.addTo(map);
+[lat,lon]
+).addTo(map),
 
-function mulaiGPS(){
+jalur:
+L.polyline(
+[],
+{
+color:"lime"
+}
+).addTo(map),
 
-navigator.geolocation.watchPosition(
+last:
+Date.now()
+
+};
+
+}
+
+anggota[id]
+.marker
+.setLatLng(
+[lat,lon]
+);
+
+anggota[id]
+.marker
+.bindPopup(
+
+nama+
+
+"<br>"+
+
+lat+
+
+"<br>"+
+
+lon
+
+);
+
+anggota[id]
+.jalur
+.addLatLng(
+[lat,lon]
+);
+
+anggota[id]
+.last=
+Date.now();
+
+renderPanel();
+
+}
+
+function renderPanel(){
+
+let html="";
+
+for(let id in anggota){
+
+let st =
+
+(Date.now()-
+
+anggota[id].last)
+
+<15000 ?
+
+"ONLINE"
+
+:
+
+"OFFLINE";
+
+html += `
+
+<div class="member">
+
+ID :
+
+${id}
+
+<br>
+
+STATUS :
+
+<span class="${
+st=="ONLINE"?
+"online":
+"offline"
+}">
+
+${st}
+
+</span>
+
+</div>
+
+`;
+
+}
+
+document.getElementById(
+"anggotaList"
+).innerHTML=
+html;
+
+}
+
+function mulaiTracking(){
+
+let id=
+prompt(
+"ID ANGGOTA"
+);
+
+let nama=
+prompt(
+"NAMA"
+);
+
+navigator.geolocation
+.watchPosition(
 
 (pos)=>{
 
-let lat =
+let lat=
 pos.coords.latitude;
 
-let lon =
+let lon=
 pos.coords.longitude;
 
-document.getElementById(
-"lat"
-).innerHTML =
-lat;
-
-document.getElementById(
-"lon"
-).innerHTML =
-lon;
-
-marker.setLatLng(
-[lat,lon]
-);
-
-map.setView(
-[lat,lon]
+updateAnggota(
+id,
+nama,
+lat,
+lon
 );
 
 google.script.run
 .simpanLokasi(
+id,
+nama,
 lat,
 lon
+);
+
+map.setView(
+[lat,lon]
 );
 
 },
@@ -239,68 +351,10 @@ maximumAge:0
 
 }
 
-function bukaStreet(){
-
-document.getElementById(
-"street"
-).style.display=
-"block";
-
-pannellum.viewer(
-
-'street',
-
-{
-
-type:
-"equirectangular",
-
-panorama:
-"360.jpg",
-
-autoLoad:
-true,
-
-showControls:
-true,
-
-hotSpots:[
-
-{
-
-pitch:0,
-
-yaw:20,
-
-text:
-"NEXT",
-
-clickHandlerFunc:()=>{
-
-alert(
-"PINDAH TITIK"
+setInterval(
+renderPanel,
+5000
 );
-
-}
-
-}
-
-]
-
-}
-
-);
-
-}
-
-function tutupStreet(){
-
-document.getElementById(
-"street"
-).style.display=
-"none";
-
-}
 
 </script>
 
