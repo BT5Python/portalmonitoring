@@ -1,13 +1,18 @@
 <!DOCTYPE html>
 <html>
 <head>
+
 <meta charset="UTF-8">
-<title>TRACKING ANGGOTA</title>
+
+<title>TRACKING 3D</title>
+
+<script src="
+https://cesium.com/downloads/cesiumjs/releases/1.120/Build/Cesium/Cesium.js">
+</script>
 
 <link rel="stylesheet"
-href="https://unpkg.com/leaflet/dist/leaflet.css"/>
-
-<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+href="
+https://cesium.com/downloads/cesiumjs/releases/1.120/Build/Cesium/Widgets/widgets.css">
 
 <style>
 
@@ -19,98 +24,111 @@ font-family:Courier New;
 }
 
 #topbar{
+
+position:absolute;
+
+top:0;
+
+width:100%;
+
 padding:10px;
+
 background:#111;
-border-bottom:1px solid #00ff00;
+
+z-index:9999;
+
 }
 
 button{
+
 background:black;
+
 color:#00ff00;
+
 border:1px solid #00ff00;
+
 padding:8px;
-margin:2px;
-cursor:pointer;
+
 }
 
-#map{
-height:calc(100vh - 70px);
+#cesiumContainer{
+
+height:100vh;
+
 width:100%;
+
 }
 
 </style>
 
 </head>
+
 <body>
 
 <div id="topbar">
 
 <button onclick="mulaiTracking()">
-📡 MULAI TRACKING
-</button>
 
-<button onclick="modeSatelit()">
-🛰 SATELIT
-</button>
+📡 TRACKING
 
-<button onclick="modeNormal()">
-🗺 NORMAL
 </button>
 
 <span id="status">
+
 OFFLINE
+
 </span>
 
 </div>
 
-<div id="map"></div>
+<div id="cesiumContainer">
+
+</div>
 
 <script>
 
-let map =
-L.map('map').setView(
-[-6.914744,107.609810],
-15
-);
+Cesium.Ion.defaultAccessToken='';
 
-let normalLayer =
-L.tileLayer(
-'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
-);
+const viewer =
+new Cesium.Viewer(
+'cesiumContainer',
+{
 
-let satelitLayer =
-L.tileLayer(
-'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'
-);
+terrain:
+Cesium.Terrain.fromWorldTerrain(),
 
-normalLayer.addTo(map);
+animation:false,
 
-let marker =
-L.marker(
-[-6.914744,107.609810]
-).addTo(map);
-
-function modeSatelit(){
-
-map.removeLayer(normalLayer);
-
-satelitLayer.addTo(map);
+timeline:false
 
 }
 
-function modeNormal(){
+);
 
-map.removeLayer(satelitLayer);
+let target =
+viewer.entities.add({
 
-normalLayer.addTo(map);
+position:
+Cesium.Cartesian3.fromDegrees(
+107.609810,
+-6.914744,
+100
+),
+
+point:{
+
+pixelSize:15
 
 }
+
+});
 
 function mulaiTracking(){
 
 document.getElementById(
 "status"
-).innerHTML="ONLINE";
+).innerHTML=
+"ONLINE";
 
 navigator.geolocation.watchPosition(
 
@@ -122,21 +140,44 @@ pos.coords.latitude;
 let lon =
 pos.coords.longitude;
 
-marker.setLatLng(
-[lat,lon]
+target.position=
+
+Cesium.Cartesian3
+.fromDegrees(
+
+lon,
+
+lat,
+
+100
+
 );
 
-map.setView(
-[lat,lon]
-);
+viewer.camera.flyTo({
 
-marker.bindPopup(
-`
-LAT : ${lat}
-<br>
-LON : ${lon}
-`
-);
+destination:
+
+Cesium.Cartesian3
+.fromDegrees(
+
+lon,
+
+lat,
+
+2000
+
+),
+
+orientation:{
+
+pitch:
+Cesium.Math.toRadians(
+-45
+)
+
+}
+
+});
 
 google.script.run
 .simpanLokasi(
@@ -144,20 +185,6 @@ lat,
 lon
 );
 
-},
-
-(err)=>{
-
-alert(
-"GAGAL GPS"
-);
-
-},
-
-{
-enableHighAccuracy:true,
-maximumAge:0,
-timeout:5000
 }
 
 );
@@ -167,4 +194,5 @@ timeout:5000
 </script>
 
 </body>
+
 </html>
