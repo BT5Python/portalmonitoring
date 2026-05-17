@@ -1,160 +1,168 @@
 <!DOCTYPE html>
 <html>
 <head>
+<meta charset="UTF-8">
+<title>TRACKING ANGGOTA</title>
 
-<script src="https://cesium.com/downloads/cesiumjs/releases/1.120/Build/Cesium/Cesium.js"></script>
+<link rel="stylesheet"
+href="https://unpkg.com/leaflet/dist/leaflet.css"/>
 
-<link href="https://cesium.com/downloads/cesiumjs/releases/1.120/Build/Cesium/Widgets/widgets.css"
-rel="stylesheet">
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
 <style>
 
-html,body,#cesiumContainer{
-width:100%;
-height:100%;
+body{
 margin:0;
-overflow:hidden;
 background:black;
+color:#00ff00;
+font-family:Courier New;
 }
 
-#hud{
-
-position:absolute;
-
-top:10px;
-left:10px;
-
-z-index:9999;
-
-background:
-rgba(0,0,0,.8);
-
-color:#00ff00;
-
+#topbar{
 padding:10px;
+background:#111;
+border-bottom:1px solid #00ff00;
+}
 
-border:
-1px solid #00ff00;
+button{
+background:black;
+color:#00ff00;
+border:1px solid #00ff00;
+padding:8px;
+margin:2px;
+cursor:pointer;
+}
 
-font-family:
-Courier New;
-
+#map{
+height:calc(100vh - 70px);
+width:100%;
 }
 
 </style>
 
 </head>
-
 <body>
 
-<div id="hud">
+<div id="topbar">
 
-GPS ONLINE
+<button onclick="mulaiTracking()">
+📡 MULAI TRACKING
+</button>
 
-<br>
+<button onclick="modeSatelit()">
+🛰 SATELIT
+</button>
 
-LAT :
-<span id="lat">0</span>
+<button onclick="modeNormal()">
+🗺 NORMAL
+</button>
 
-<br>
-
-LON :
-<span id="lon">0</span>
+<span id="status">
+OFFLINE
+</span>
 
 </div>
 
-<div id="cesiumContainer"></div>
+<div id="map"></div>
 
 <script>
 
-Cesium.Ion.defaultAccessToken='';
-
-const viewer=
-new Cesium.Viewer(
-'cesiumContainer',
-{
-
-terrain:
-Cesium.Terrain.fromWorldTerrain(),
-
-animation:false,
-
-timeline:false,
-
-baseLayerPicker:false
-
-}
-
+let map =
+L.map('map').setView(
+[-6.914744,107.609810],
+15
 );
 
-let entity=
-viewer.entities.add({
+let normalLayer =
+L.tileLayer(
+'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
+);
 
-position:
-Cesium.Cartesian3.fromDegrees(
-107.609810,
--6.914744,
-100
-),
+let satelitLayer =
+L.tileLayer(
+'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'
+);
 
-point:{
-pixelSize:12
+normalLayer.addTo(map);
+
+let marker =
+L.marker(
+[-6.914744,107.609810]
+).addTo(map);
+
+function modeSatelit(){
+
+map.removeLayer(normalLayer);
+
+satelitLayer.addTo(map);
+
 }
 
-});
+function modeNormal(){
 
-viewer.flyTo(entity);
+map.removeLayer(satelitLayer);
+
+normalLayer.addTo(map);
+
+}
+
+function mulaiTracking(){
+
+document.getElementById(
+"status"
+).innerHTML="ONLINE";
 
 navigator.geolocation.watchPosition(
 
 (pos)=>{
 
-let lat=
+let lat =
 pos.coords.latitude;
 
-let lon=
+let lon =
 pos.coords.longitude;
 
-document.getElementById(
-"lat"
-).innerHTML=
-lat;
-
-document.getElementById(
-"lon"
-).innerHTML=
-lon;
-
-entity.position=
-Cesium.Cartesian3.fromDegrees(
-lon,
-lat,
-100
+marker.setLatLng(
+[lat,lon]
 );
 
-viewer.camera.flyTo({
+map.setView(
+[lat,lon]
+);
 
-destination:
-Cesium.Cartesian3.fromDegrees(
-lon,
+marker.bindPopup(
+`
+LAT : ${lat}
+<br>
+LON : ${lon}
+`
+);
+
+google.script.run
+.simpanLokasi(
 lat,
-1500
-),
+lon
+);
 
-orientation:{
+},
 
-pitch:
-Cesium.Math.toRadians(
--45
-)
+(err)=>{
 
-}
+alert(
+"GAGAL GPS"
+);
 
-});
+},
 
+{
+enableHighAccuracy:true,
+maximumAge:0,
+timeout:5000
 }
 
 );
+
+}
 
 </script>
 
