@@ -2,10 +2,9 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>TRACKING ANGGOTA</title>
 
 <link rel="stylesheet"
-href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+href="https://unpkg.com/leaflet/dist/leaflet.css">
 
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
@@ -13,113 +12,184 @@ href="https://unpkg.com/leaflet/dist/leaflet.css"/>
 
 body{
 margin:0;
-background:black;
-color:#00ff00;
+background:#000;
 font-family:Courier New;
-}
-
-#topbar{
-padding:10px;
-background:#111;
-border-bottom:1px solid #00ff00;
-}
-
-button{
-background:black;
-color:#00ff00;
-border:1px solid #00ff00;
-padding:8px;
-margin:2px;
-cursor:pointer;
+overflow:hidden;
 }
 
 #map{
-height:calc(100vh - 70px);
+height:100vh;
 width:100%;
+filter:
+hue-rotate(80deg)
+brightness(.7)
+contrast(1.3);
+}
+
+#hud{
+
+position:absolute;
+
+top:10px;
+left:10px;
+
+z-index:9999;
+
+background:
+rgba(0,0,0,.8);
+
+border:
+1px solid #00ff00;
+
+padding:10px;
+
+color:#00ff00;
+
+box-shadow:
+0 0 20px #00ff00;
+
+}
+
+#radar{
+
+position:absolute;
+
+right:20px;
+bottom:20px;
+
+width:150px;
+height:150px;
+
+border-radius:50%;
+
+border:
+2px solid #00ff00;
+
+box-shadow:
+0 0 20px #00ff00;
+
+z-index:9999;
+
+overflow:hidden;
+
+}
+
+#scan{
+
+width:100%;
+height:2px;
+
+background:#00ff00;
+
+position:absolute;
+
+animation:
+scan 2s linear infinite;
+
+box-shadow:
+0 0 20px #00ff00;
+
+}
+
+@keyframes scan{
+
+0%{
+top:0;
+}
+
+100%{
+top:150px;
+}
+
+}
+
+.grid{
+
+position:absolute;
+
+width:100%;
+height:100%;
+
+background-image:
+linear-gradient(
+#00ff0030 1px,
+transparent 1px),
+
+linear-gradient(
+90deg,
+#00ff0030 1px,
+transparent 1px);
+
+background-size:
+40px 40px;
+
+z-index:999;
+
+pointer-events:none;
+
 }
 
 </style>
 
 </head>
+
 <body>
 
-<div id="topbar">
+<div class="grid"></div>
 
-<button onclick="mulaiTracking()">
-📡 MULAI TRACKING
-</button>
+<div id="hud">
 
-<button onclick="modeSatelit()">
-🛰 SATELIT
-</button>
+SYSTEM : ONLINE<br>
 
-<button onclick="modeNormal()">
-🗺 NORMAL
-</button>
-
-<span id="status">
-OFFLINE
+LAT :
+<span id="lat">
+0
 </span>
 
+<br>
+
+LON :
+<span id="lon">
+0
+</span>
+
+</div>
+
+<div id="radar">
+<div id="scan"></div>
 </div>
 
 <div id="map"></div>
 
 <script>
 
-let map =
-L.map('map').setView(
-[-6.914744,107.609810],
-15
+let map=
+L.map(
+'map'
+).setView(
+[-6.914744,
+107.609810],
+17
 );
 
-let normalLayer =
-L.tileLayer(
-'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
-);
-
-let satelitLayer =
 L.tileLayer(
 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'
-);
-
-normalLayer.addTo(map);
-
-let marker =
-L.marker(
-[-6.914744,107.609810]
 ).addTo(map);
 
-function modeSatelit(){
-
-map.removeLayer(normalLayer);
-
-satelitLayer.addTo(map);
-
-}
-
-function modeNormal(){
-
-map.removeLayer(satelitLayer);
-
-normalLayer.addTo(map);
-
-}
-
-function mulaiTracking(){
-
-document.getElementById(
-"status"
-).innerHTML="ONLINE";
+let marker=
+L.marker(
+[-6.914744,
+107.609810]
+).addTo(map);
 
 navigator.geolocation.watchPosition(
 
 (pos)=>{
 
-let lat =
+let lat=
 pos.coords.latitude;
 
-let lon =
+let lon=
 pos.coords.longitude;
 
 marker.setLatLng(
@@ -130,39 +200,19 @@ map.setView(
 [lat,lon]
 );
 
-marker.bindPopup(
-`
-LAT : ${lat}
-<br>
-LON : ${lon}
-`
-);
+document.getElementById(
+"lat"
+).innerHTML=
+lat;
 
-google.script.run
-.simpanLokasi(
-lat,
-lon
-);
-
-},
-
-(err)=>{
-
-alert(
-"GAGAL GPS"
-);
-
-},
-
-{
-enableHighAccuracy:true,
-maximumAge:0,
-timeout:5000
-}
-
-);
+document.getElementById(
+"lon"
+).innerHTML=
+lon;
 
 }
+
+);
 
 </script>
 
